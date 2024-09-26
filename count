@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multipurpose Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .calculator {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 350px;
+            text-align: center;
+        }
+
+        .calculator h1 {
+            color: #4A4A4A;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .calculator input, .calculator select, .calculator button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .calculator input:focus, .calculator select:focus, .calculator button:focus {
+            outline: none;
+            border-color: #00aaff;
+            box-shadow: 0 0 10px rgba(0, 170, 255, 0.2);
+        }
+
+        .calculator button {
+            background-color: #00aaff;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border: none;
+        }
+
+        .calculator button:hover {
+            background-color: #008ecc;
+        }
+
+        .calculator select {
+            background-color: #f7f7f7;
+        }
+
+        .calculator h1, .calculator a {
+            color: #333;
+        }
+
+        .calculator a {
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            color: #00aaff;
+        }
+
+        .calculator a:hover {
+            text-decoration: underline;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e6f7ff;
+            border-radius: 10px;
+            border: 1px solid #b3e0ff;
+            color: #006bb3;
+            font-weight: bold;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .calculator {
+                width: 100%;
+                padding: 20px;
+                box-shadow: none;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>Multipurpose Calculator</h1>
+        <form action="" method="POST" id="calcForm">
+            <input type="number" name="num1" placeholder="Enter first number" required>
+            <input type="number" name="num2" placeholder="Enter second number" required id="secondInput">
+            <select name="operation" required onchange="handleOperationChange(this.value)">
+                <option value="add">Addition</option>
+                <option value="subtract">Subtraction</option>
+                <option value="multiply">Multiplication</option>
+                <option value="divide">Division</option>
+                <option value="exponentiation">Exponentiation</option>
+                <option value="percentage">Percentage</option>
+                <option value="sqrt">Square Root</option>
+                <option value="logarithm">Logarithm</option>
+            </select>
+            <button type="submit">Calculate</button>
+        </form>
+
+        <!-- Result section -->
+        <div id="resultDiv" class="result">
+            <h1 id="resultText">Result: </h1>
+        </div>
+    </div>
+
+    <?php
+    
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+
+    
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+       
+        $num1 = isset($_POST['num1']) ? $_POST['num1'] : null;
+        $num2 = isset($_POST['num2']) ? $_POST['num2'] : null;
+        $operation = isset($_POST['operation']) ? $_POST['operation'] : null;
+
+        
+        $result = '';
+
+        if ($operation !== null) {
+            
+            switch ($operation) {
+                case 'add':
+                    $result = $num1 + $num2;
+                    break;
+                case 'subtract':
+                    $result = $num1 - $num2;
+                    break;
+                case 'multiply':
+                    $result = $num1 * $num2;
+                    break;
+                case 'divide':
+                    if ($num2 != 0) {
+                        $result = $num1 / $num2;
+                    } else {
+                        $result = "Division by zero error!";
+                    }
+                    break;
+                case 'exponentiation':
+                    $result = pow($num1, $num2);
+                    break;
+                case 'percentage':
+                    $result = ($num1 / 100) * $num2;
+                    break;
+                case 'sqrt':
+                    if ($num1 >= 0) {
+                        $result = sqrt($num1);
+                    } else {
+                        $result = "Cannot calculate square root of a negative number!";
+                    }
+                    break;
+                case 'logarithm':
+                    if ($num1 > 0) {
+                        $result = log($num1);
+                    } else {
+                        $result = "Logarithm undefined for non-positive values!";
+                    }
+                    break;
+                default:
+                    $result = "Invalid operation selected.";
+            }
+        } else {
+            $result = "No operation selected.";
+        }
+
+        
+        echo "<script>
+            document.getElementById('resultText').innerText = 'Result: $result';
+            document.getElementById('resultDiv').style.display = 'block';
+        </script>";
+    }
+    ?>
+
+    <script>
+        function handleOperationChange(operation) {
+            const secondInput = document.getElementById('secondInput');
+            
+            if (operation === 'sqrt' || operation === 'logarithm') {
+                secondInput.disabled = true;
+                secondInput.removeAttribute('required');
+            } else {
+                secondInput.disabled = false;
+                secondInput.setAttribute('required', 'required');
+            }
+        }
+    </script>
+</body>
+</html>
